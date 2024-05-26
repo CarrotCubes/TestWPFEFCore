@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using DryIoc;
+using Microsoft.Extensions.Logging;
 using Prism.Commands;
+using Prism.Ioc;
 using Prism.Mvvm;
+using Prism.Regions;
 using TestWPFEFCore.Context;
 using TestWPFEFCore.Services;
+using TestWPFEFCore.Views;
 
 namespace TestWPFEFCore.ViewModels
 {
@@ -14,14 +20,13 @@ namespace TestWPFEFCore.ViewModels
     {
         public DelegateCommand DelegateCommand { get; set; }
 
-        private readonly ICarService _carService;
-
-        public MainWindowViewModel(ICarService carService)
+        public MainWindowViewModel(IContainerProvider provider, IRegionManager regionManager)
         {
-            _carService = carService;
-            DelegateCommand = new DelegateCommand(async () =>
+            regionManager.RegisterViewWithRegion("ContentRegion", typeof(MyUserControl1));
+            DelegateCommand = new DelegateCommand(() =>
             {
-                var sss = await _carService.GetCarInfo();
+                MyWindow1 myWindow1 = provider.Resolve<MyWindow1>();
+                myWindow1.ShowDialog();
             });
         }
     }

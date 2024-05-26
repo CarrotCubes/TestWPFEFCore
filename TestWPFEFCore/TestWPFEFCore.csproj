@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows7.0</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UseWPF>true</UseWPF>
@@ -11,15 +11,16 @@
 	<ItemGroup>
 		<Compile Remove="Repository\CarRepository.cs" />
 		<Compile Remove="Repository\IRespository1.cs" />
+		<Compile Remove="ViewModels\MyWindow1ViewModel.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+		<PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Views\" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 	</ItemGroup>
 
 </Project>
