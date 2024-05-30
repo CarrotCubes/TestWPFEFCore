@@ -2,14 +2,11 @@
 using System.Data;
 using System.IO;
 using System.Windows;
-using DryIoc;
-using DryIoc.Microsoft.DependencyInjection;
-using Example;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Prism.DryIoc;
 using Prism.Ioc;
 using Prism.Regions;
+using Prism.Unity;
 using Serilog;
 using Serilog.Events;
 using Serilog.Filters;
@@ -20,6 +17,8 @@ using TestWPFEFCore.Services;
 using TestWPFEFCore.UnitOfWork;
 using TestWPFEFCore.ViewModels;
 using TestWPFEFCore.Views;
+using Unity;
+using Unity.Microsoft.DependencyInjection;
 
 namespace TestWPFEFCore
 {
@@ -39,20 +38,21 @@ namespace TestWPFEFCore
             containerRegistry.Register<WPFDBContext>();
             containerRegistry.Register<IUnitOfWork, UnitOfWork.UnitOfWork>();
             containerRegistry.Register(typeof(IRespository<>), typeof(Respository<>));
-            containerRegistry.Register<ICarService, CarService>();
+            containerRegistry.Register<ICarService, CCCarService>("cc");
+            containerRegistry.Register<ICarService, CarService>("c");
 
         }
 
         // WithoutFastExpressionCompiler()  该行代码在DryIOC 5.0 版本已经删除，应该是Prism默认配置的还是存在该行代码，所以要重写该方法，把  WithoutFastExpressionCompiler() 去掉
-        protected override Rules CreateContainerRules()
-        {
-            return Rules.Default.WithConcreteTypeDynamicRegistrations(reuse: Reuse.Transient)
-                                .With(Made.Of(FactoryMethod.ConstructorWithResolvableArguments))
-                                .WithFuncAndLazyWithoutRegistration()
-                                .WithTrackingDisposableTransients()
-                                //.WithoutFastExpressionCompiler() 
-                                .WithFactorySelector(Rules.SelectLastRegisteredFactory());
-        }
+        //protected override Rules CreateContainerRules()
+        //{
+        //    return Rules.Default.WithConcreteTypeDynamicRegistrations(reuse: Reuse.Transient)
+        //                        .With(Made.Of(FactoryMethod.ConstructorWithResolvableArguments))
+        //                        .WithFuncAndLazyWithoutRegistration()
+        //                        .WithTrackingDisposableTransients()
+        //                        //.WithoutFastExpressionCompiler() 
+        //                        .WithFactorySelector(Rules.SelectLastRegisteredFactory());
+        //}
 
         protected override IContainerExtension CreateContainerExtension()
         {
@@ -64,8 +64,15 @@ namespace TestWPFEFCore
 
             serviceCollection.AddLogging(logbuilder => logbuilder.AddSerilog());
 
-            return new DryIocContainerExtension(new Container(CreateContainerRules())
-                        .WithDependencyInjectionAdapter(serviceCollection));
+            // 通过DruIoc扩展 IServiceCollection
+            //return new DryIocContainerExtension(new Container(CreateContainerRules())
+            //            .WithDependencyInjectionAdapter(serviceCollection));
+
+            var container = new UnityContainer();
+            container.BuildServiceProvider(serviceCollection);
+
+            return new UnityContainerExtension(container);
+
         }
 
         protected override void Initialize()

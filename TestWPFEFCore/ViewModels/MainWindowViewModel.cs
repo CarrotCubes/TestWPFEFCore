@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using DryIoc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Prism.Commands;
 using Prism.Ioc;
@@ -13,6 +13,7 @@ using Prism.Regions;
 using TestWPFEFCore.Context;
 using TestWPFEFCore.Services;
 using TestWPFEFCore.Views;
+using Unity;
 
 namespace TestWPFEFCore.ViewModels
 {
@@ -20,13 +21,20 @@ namespace TestWPFEFCore.ViewModels
     {
         public DelegateCommand DelegateCommand { get; set; }
 
+        [Dependency("cc")]
+        public ICarService? _carService;
+
         public MainWindowViewModel(IContainerProvider provider, IRegionManager regionManager)
         {
             regionManager.RegisterViewWithRegion("ContentRegion", typeof(MyUserControl1));
             DelegateCommand = new DelegateCommand(() =>
             {
-                MyWindow1 myWindow1 = provider.Resolve<MyWindow1>();
-                myWindow1.ShowDialog();
+                var sss = provider.Resolve<ICarService>("cc");
+                var ddd = provider.Resolve<ICarService>("c");
+                bool flag = sss == ddd;
+                bool flag2 = _carService == sss;
+                //MyWindow1 myWindow1 = provider.Resolve<MyWindow1>();
+                //myWindow1.ShowDialog();
             });
         }
     }
