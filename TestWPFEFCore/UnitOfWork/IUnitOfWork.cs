@@ -11,7 +11,8 @@ namespace TestWPFEFCore.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
-        public DbContext GetDbContext();
+        public TContext? GetDbContext<TContext>() where TContext : DbContext;
+
         public IRespository<TEntity> GetRespository<TEntity>() where TEntity : class;
     }
 }

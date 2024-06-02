@@ -6,21 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using TestWPFEFCore.Context;
 using TestWPFEFCore.UnitOfWork;
 
 namespace TestWPFEFCore.Repository
 {
     public class Respository<TEntity> : IRespository<TEntity> where TEntity : class
     {
-        private readonly DbContext _dbContext;
+        private readonly DbContext? _dbContext;
 
-        private readonly DbSet<TEntity> _entities;
+        private readonly DbSet<TEntity>? _entities;
 
         public Respository(IUnitOfWork unitOfWork)
         {
-            _dbContext = unitOfWork.GetDbContext();
-            _entities = _dbContext.Set<TEntity>();
+            _dbContext = unitOfWork.GetDbContext<DbContext>();
+            _entities = _dbContext?.Set<TEntity>();
         }
+
         public async Task<TEntity?> GetFirstOrDefaultAsync(
                                             Expression<Func<TEntity, bool>> predicate = null,
                                             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -59,5 +61,46 @@ namespace TestWPFEFCore.Repository
                 return await query.FirstOrDefaultAsync();
             }
         }
+
+
+        public async Task<List<TEntity>?> GetAllAsync(
+                                          Expression<Func<TEntity, bool>> predicate = null,
+                                          Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
+                                          bool disableTracking = true,
+                                          bool ignoreQueryFilters = false)
+        {
+            IQueryable<TEntity> query = _entities;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (ignoreQueryFilters)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+
+            if (orderBy != null)
+            {
+                return await orderBy(query).ToListAsync();
+            }
+            else
+            {
+                return await query.ToListAsync();
+            }
+        }
+
     }
 }

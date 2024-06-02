@@ -76,6 +76,7 @@ namespace TestWPFEFCore.Entity
         /// </summary>
         public int IsManual { get; set; }
 
+        public IEnumerable<UploadFile>? UploadFiles { get; set; }
 
     }
 }

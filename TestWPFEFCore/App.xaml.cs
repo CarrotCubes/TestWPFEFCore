@@ -1,17 +1,23 @@
-﻿using System.Configuration;
+﻿using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Prism.Ioc;
 using Prism.Regions;
 using Prism.Unity;
+using Quartz;
 using Serilog;
 using Serilog.Events;
 using Serilog.Filters;
 using TestWPFEFCore.Context;
 using TestWPFEFCore.Entity;
+using TestWPFEFCore.Extensions;
+using TestWPFEFCore.Job;
 using TestWPFEFCore.Repository;
 using TestWPFEFCore.Services;
 using TestWPFEFCore.UnitOfWork;
@@ -32,15 +38,38 @@ namespace TestWPFEFCore
             return Container.Resolve<MainWindow>();
         }
 
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+
+            ISchedulerFactory schedulerFactory = Container.Resolve<ISchedulerFactory>();
+            IScheduler? scheduler = schedulerFactory.GetScheduler().Result;
+            _ = scheduler?.Start();
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+
+
+            base.OnStartup(e);
+        }
+
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<MainWindow, MainWindowViewModel>();
             containerRegistry.Register<WPFDBContext>();
-            containerRegistry.Register<IUnitOfWork, UnitOfWork.UnitOfWork>();
+            containerRegistry.Register(typeof(IUnitOfWork), typeof(UnitOfWork<WPFDBContext>));
             containerRegistry.Register(typeof(IRespository<>), typeof(Respository<>));
             containerRegistry.Register<ICarService, CCCarService>("cc");
             containerRegistry.Register<ICarService, CarService>("c");
+            containerRegistry.Register<IUploadFileService, UploadFileService>();
+            //containerRegistry.Register<TestJob>();
 
+
+
+
+
+            //var job = Container.Resolve<TestJob>();
         }
 
         // WithoutFastExpressionCompiler()  该行代码在DryIOC 5.0 版本已经删除，应该是Prism默认配置的还是存在该行代码，所以要重写该方法，把  WithoutFastExpressionCompiler() 去掉
@@ -57,20 +86,41 @@ namespace TestWPFEFCore
         protected override IContainerExtension CreateContainerExtension()
         {
             string conn = ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
+            var container = new UnityContainer();
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDbContext<WPFDBContext>(options =>
-            options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37))));
+                    options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37))));
 
             serviceCollection.AddLogging(logbuilder => logbuilder.AddSerilog());
 
-            // 通过DruIoc扩展 IServiceCollection
+            serviceCollection.AddQuartz(q =>
+            {
+                q.ScheduleJob<TestJob>(trigger => trigger
+                        .StartNow()
+                        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
+
+
+                q.ScheduleJob<TestJob2>(trigger => trigger
+                      .StartNow()
+                      .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
+
+
+                //var jobKeyMissingCar = new JobKey("TestJob");
+                //q.AddJob<TestJob>(job => job.WithIdentity(jobKeyMissingCar));
+                //q.AddTrigger(trigger => trigger
+                //        .StartNow()
+                //        .ForJob(jobKeyMissingCar)
+                //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
+
+            });
+
+            // 通过DryIoc扩展 IServiceCollection
             //return new DryIocContainerExtension(new Container(CreateContainerRules())
             //            .WithDependencyInjectionAdapter(serviceCollection));
 
-            var container = new UnityContainer();
-            container.BuildServiceProvider(serviceCollection);
 
+            container.BuildServiceProvider(serviceCollection);
             return new UnityContainerExtension(container);
 
         }

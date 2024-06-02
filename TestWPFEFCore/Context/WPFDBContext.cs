@@ -26,8 +26,16 @@ namespace TestWPFEFCore.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //modelBuilder.Entity<CarInfo>().HasNoKey();
+
+            modelBuilder.Entity<CarInfo>()
+                        .HasMany(c => c.UploadFiles)
+                        .WithOne()
+                        .HasForeignKey(u => u.CarId)
+                        .IsRequired();
         }
 
         public DbSet<CarInfo>? CarInfo { get; set; }
+
+        public DbSet<UploadFile> UploadFile { get; set; }
     }
 }

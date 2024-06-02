@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestWPFEFCore.Context;
 using TestWPFEFCore.Entity;
 using TestWPFEFCore.Repository;
+using TestWPFEFCore.Services.Base;
 
 namespace TestWPFEFCore.Services
 {
-    public class CarService : ICarService
+    public class CarService : BaseService<CarInfo>, ICarService
     {
-        private readonly IRespository<CarInfo> respository;
-        public CarService(IRespository<CarInfo> _respository)
+        private readonly IRespository<CarInfo>? _respository;
+
+        public CarService(IRespository<CarInfo> _respository) : base(_respository)
         {
-            respository = _respository;
-        }
-        public async Task<CarInfo?> GetCarInfo()
-        {
-            return await respository.GetFirstOrDefaultAsync();
         }
     }
 }

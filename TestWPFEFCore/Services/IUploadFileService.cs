@@ -8,7 +8,7 @@ using TestWPFEFCore.Services.Base;
 
 namespace TestWPFEFCore.Services
 {
-    public interface ICarService : IBaseService<CarInfo>
+    public interface IUploadFileService : IBaseService<UploadFile>
     {
     }
 }

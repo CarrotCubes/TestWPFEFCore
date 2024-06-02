@@ -10,10 +10,10 @@ using TestWPFEFCore.Repository;
 
 namespace TestWPFEFCore.UnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork<TContext> : IUnitOfWork where TContext : DbContext
     {
-        private readonly DbContext _dbContext;
-        public UnitOfWork(WPFDBContext context)
+        private readonly TContext _dbContext;
+        public UnitOfWork(TContext context)
         {
             _dbContext = context;
         }
@@ -28,9 +28,9 @@ namespace TestWPFEFCore.UnitOfWork
             _dbContext.Dispose();
         }
 
-        public DbContext GetDbContext()
+        public TDbContext? GetDbContext<TDbContext>() where TDbContext : DbContext
         {
-            return _dbContext;
+            return _dbContext as TDbContext;
         }
     }
 }

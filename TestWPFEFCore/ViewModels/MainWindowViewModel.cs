@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Prism.Commands;
@@ -11,6 +12,7 @@ using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Regions;
 using TestWPFEFCore.Context;
+using TestWPFEFCore.Entity;
 using TestWPFEFCore.Services;
 using TestWPFEFCore.Views;
 using Unity;
@@ -21,16 +23,25 @@ namespace TestWPFEFCore.ViewModels
     {
         public DelegateCommand DelegateCommand { get; set; }
 
-        [Dependency("cc")]
+        [Dependency("c")]
         public ICarService? _carService;
+
+        [Dependency]
+        public IUploadFileService _uploadFileService;
+
+        [Dependency]
+        public ILogger<MainWindowViewModel>? _logger;
 
         public MainWindowViewModel(IContainerProvider provider, IRegionManager regionManager)
         {
             regionManager.RegisterViewWithRegion("ContentRegion", typeof(MyUserControl1));
-            DelegateCommand = new DelegateCommand(() =>
+            DelegateCommand = new DelegateCommand(async () =>
             {
+                _logger?.LogInformation("TestLog");
                 var sss = provider.Resolve<ICarService>("cc");
                 var ddd = provider.Resolve<ICarService>("c");
+                List<CarInfo>? carInfos = await _carService.GetAllAsync(include: x => x.Include(x => x.UploadFiles));
+                List<UploadFile>? result = await _uploadFileService.GetAllAsync();
                 bool flag = sss == ddd;
                 bool flag2 = _carService == sss;
                 //MyWindow1 myWindow1 = provider.Resolve<MyWindow1>();

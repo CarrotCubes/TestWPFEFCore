@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TestWPFEFCore.Entity;
+using TestWPFEFCore.Repository;
 using TestWPFEFCore.Services.Base;
 
 namespace TestWPFEFCore.Services
 {
-    public interface ICarService : IBaseService<CarInfo>
+    public class UploadFileService : BaseService<UploadFile>, IUploadFileService
     {
+        public UploadFileService(IRespository<UploadFile> _respository) : base(_respository)
+        {
+        }
     }
 }
