@@ -42,6 +42,8 @@ namespace TestWPFEFCore.Entity
 
         public string? ErrorMsg { get; set; }
 
-        public int CarId { get; set; }
+        //public int CarId { get; set; }
+
+        public CarInfo? CarInfo { get; set; }
     }
 }

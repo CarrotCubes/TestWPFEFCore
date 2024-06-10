@@ -27,11 +27,25 @@ namespace TestWPFEFCore.Context
         {
             //modelBuilder.Entity<CarInfo>().HasNoKey();
 
+            //modelBuilder.Entity<CarInfo>()
+            //            .HasMany(c => c.UploadFiles)
+            //            .WithOne(u => u.CarInfo)
+            //            .HasForeignKey(u => u.CarId)
+            //            .HasPrincipalKey(c => c.Id)
+            //            .IsRequired();
+
+            //modelBuilder.Entity<UploadFile>()
+            //            .HasOne(u => u.CarInfo)
+            //            .WithMany(c => c.UploadFiles)
+            //            .HasPrincipalKey(c => c.Id)
+            //            .HasForeignKey("CarId")
+            //            .IsRequired();
+
             modelBuilder.Entity<CarInfo>()
-                        .HasMany(c => c.UploadFiles)
-                        .WithOne()
-                        .HasForeignKey(u => u.CarId)
-                        .IsRequired();
+                       .HasOne(c => c.UploadFile)
+                       .WithOne(u => u.CarInfo)
+                       .HasForeignKey<UploadFile>("CarId")
+                       .IsRequired();
         }
 
         public DbSet<CarInfo>? CarInfo { get; set; }

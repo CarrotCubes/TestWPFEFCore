@@ -12,11 +12,11 @@ namespace TestWPFEFCore.Job
     [DisallowConcurrentExecution]
     public class TestJob2 : IJob
     {
-        //[Dependency]
-        public ICarService _carService;
-        public TestJob2([Dependency("c")] ICarService carService)
+        [Dependency("c")]
+        public ICarService? _carService;
+        public TestJob2()
         {
-            _carService = carService;
+
         }
         public Task Execute(IJobExecutionContext context)
         {

@@ -20,5 +20,10 @@ namespace TestWPFEFCore
         {
             InitializeComponent();
         }
+
+        void Window_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
     }
 }

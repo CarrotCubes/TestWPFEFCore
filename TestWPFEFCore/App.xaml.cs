@@ -118,7 +118,8 @@ namespace TestWPFEFCore
             // 通过DryIoc扩展 IServiceCollection
             //return new DryIocContainerExtension(new Container(CreateContainerRules())
             //            .WithDependencyInjectionAdapter(serviceCollection));
-
+            serviceCollection.AddStackExchangeRedisCache(
+                options => options.Configuration = ConfigurationManager.ConnectionStrings["redisConn"].ConnectionString);
 
             container.BuildServiceProvider(serviceCollection);
             return new UnityContainerExtension(container);

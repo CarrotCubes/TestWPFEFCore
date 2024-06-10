@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="MyDependencyObject\MyDependencyOB.cs" />
 		<Compile Remove="Repository\CarRepository.cs" />
 		<Compile Remove="Repository\IRespository1.cs" />
 		<Compile Remove="ViewModels\MyWindow1ViewModel.cs" />
@@ -26,7 +27,12 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
 		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.8.1" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.6" />
+		<PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
+	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="MyDependencyObject\" />
 	</ItemGroup>
 
 </Project>

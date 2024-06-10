@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Prism.Commands;
@@ -32,6 +33,9 @@ namespace TestWPFEFCore.ViewModels
         [Dependency]
         public ILogger<MainWindowViewModel>? _logger;
 
+        [Dependency]
+        public IDistributedCache? _cache;
+
         public MainWindowViewModel(IContainerProvider provider, IRegionManager regionManager)
         {
             regionManager.RegisterViewWithRegion("ContentRegion", typeof(MyUserControl1));
@@ -40,8 +44,12 @@ namespace TestWPFEFCore.ViewModels
                 _logger?.LogInformation("TestLog");
                 var sss = provider.Resolve<ICarService>("cc");
                 var ddd = provider.Resolve<ICarService>("c");
-                List<CarInfo>? carInfos = await _carService.GetAllAsync(include: x => x.Include(x => x.UploadFiles));
+                List<CarInfo>? carInfos = await _carService.GetAllAsync(include: x => x.Include(x => x.UploadFile));
                 List<UploadFile>? result = await _uploadFileService.GetAllAsync();
+                // redis 读写操作
+                //_cache?.SetString("userName", "bing234");
+                //_cache?.SetString("userNameqww", "444");
+                //string? name = _cache?.GetString("userName");
                 bool flag = sss == ddd;
                 bool flag2 = _carService == sss;
                 //MyWindow1 myWindow1 = provider.Resolve<MyWindow1>();

@@ -5,9 +5,109 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TestWPFEFCore"
         mc:Ignorable="d"
+        WindowStyle="None"
         xmlns:prism="http://prismlibrary.com/"
-        Title="MainWindow" Height="450" Width="800">
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:usercontrol="clr-namespace:TestWPFEFCore.Views"
+        Title="MainWindow" Height="450" Width="800"
+        BorderThickness="0"
+        AllowsTransparency="True"
+        WindowChrome.IsHitTestVisibleInChrome="True"
+        WindowStartupLocation="CenterScreen"
+        MouseLeftButtonDown="Window_PreviewMouseLeftButtonDown"
+        WindowChrome.WindowChrome="{StaticResource WindowChromeKey}">
+
     <Grid>
-        <Button Height="200" Width="100" Command="{Binding DelegateCommand}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <usercontrol:Header x:Name="user_header"/>
+        </Grid>
+        <materialDesign:Card Grid.Row="1">
+            <TabControl materialDesign:ColorZoneAssist.Mode="Standard"
+                        materialDesign:ElevationAssist.Elevation="Dp3"
+                        Grid.Row="1">
+                <TabControl.Resources>
+                    <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource MaterialDesignNavigationRailTabControl}">
+                        <Setter Property="ItemContainerStyle">
+                            <Setter.Value>
+                                <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MaterialDesignNavigationRailTabItem}">
+                                    <Setter Property="MinWidth" Value="35"/>
+                                    <Setter Property="Width" Value="auto"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding MyToggleButton, ElementName=user_header}" Value="True">
+                                            <DataTrigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation 
+                                       Storyboard.TargetProperty="MinWidth"
+                                       From="35" To="100" Duration="0:0:0.5"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.EnterActions>
+                                            <DataTrigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation 
+                                       Storyboard.TargetProperty="MinWidth"
+                                       From="100" To="35" Duration="0:0:0.5"/>
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </DataTrigger.ExitActions>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MyToggleButton, ElementName=user_header}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="Margin" Value="10 0"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TabControl.Resources>
+                <TabItem>
+                    <TabItem.Header>
+                        <WrapPanel>
+                            <materialDesign:PackIcon Width="24" Height="24" HorizontalAlignment="Center" Kind="Folder" />
+                            <TextBlock Text="All Files" />
+                        </WrapPanel>
+                    </TabItem.Header>
+                    <Button Content="dsafa" Height="100" Command="{Binding DelegateCommand}"/>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <WrapPanel >
+                            <materialDesign:PackIcon Width="24" Height="24" HorizontalAlignment="Center" Kind="ClockOutline" />
+                            <TextBlock Text="Recent" />
+                        </WrapPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <WrapPanel>
+                            <materialDesign:PackIcon Width="24" Height="24" HorizontalAlignment="Center" Kind="Images" />
+                            <TextBlock Text="Photos" />
+                        </WrapPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <WrapPanel>
+                            <materialDesign:PackIcon Width="24" Height="24" HorizontalAlignment="Center" Kind="MusicBoxMultiple" />
+                            <TextBlock Text="Sounds" />
+                        </WrapPanel>
+                    </TabItem.Header>
+                </TabItem>
+            </TabControl>
+        </materialDesign:Card>
     </Grid>
 </Window>
