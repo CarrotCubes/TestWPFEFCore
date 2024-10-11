@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ShardingCore.Sharding;
+using ShardingCore.Sharding.Abstractions;
 using TestWPFEFCore.Entity;
 
 namespace TestWPFEFCore.Context

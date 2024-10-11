@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Prism.Ioc;
 using Prism.Regions;
 using Prism.Unity;
@@ -14,6 +15,11 @@ using Quartz;
 using Serilog;
 using Serilog.Events;
 using Serilog.Filters;
+using ShardingCore;
+using ShardingCore.Core.ServiceProviders;
+using ShardingCore.Sharding.ReadWriteConfigurations;
+using ShardingCore.TableExists.Abstractions;
+using ShardingCore.TableExists;
 using TestWPFEFCore.Context;
 using TestWPFEFCore.Entity;
 using TestWPFEFCore.Extensions;
@@ -23,8 +29,11 @@ using TestWPFEFCore.Services;
 using TestWPFEFCore.UnitOfWork;
 using TestWPFEFCore.ViewModels;
 using TestWPFEFCore.Views;
+using TestWPFEFCore.VirtualTableRoute;
 using Unity;
 using Unity.Microsoft.DependencyInjection;
+using ShardingCore.Sharding.Abstractions;
+using ShardingCore.Core.RuntimeContexts;
 
 namespace TestWPFEFCore
 {
@@ -45,6 +54,7 @@ namespace TestWPFEFCore
             ISchedulerFactory schedulerFactory = Container.Resolve<ISchedulerFactory>();
             IScheduler? scheduler = schedulerFactory.GetScheduler().Result;
             _ = scheduler?.Start();
+
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -90,20 +100,42 @@ namespace TestWPFEFCore
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddDbContext<WPFDBContext>(options =>
-                    options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37))));
+                    options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37))), contextLifetime: ServiceLifetime.Transient);
+
+            //serviceCollection.AddShardingDbContext<WPFDBContext>(options =>
+            //        options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37))));
+            //serviceCollection.AddShardingDbContext<WPFDBContext>()
+            //                 .UseRouteConfig(op =>
+            //                 {
+            //                     op.AddShardingTableRoute<CarVirtualTableRoute>();
+
+            //                 })
+            //                 .UseConfig(op =>
+            //                 {
+            //                     op.ThrowIfQueryRouteNotMatch = false;
+            //                     op.UseShardingQuery((conn, options) => options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37))));
+            //                     op.UseShardingTransaction((conn, options) =>
+            //                     {
+            //                         options.UseMySql(conn, new MySqlServerVersion(new Version(5, 7, 37)));
+            //                     });
+            //                     op.AddDefaultDataSource("ds0", conn);
+            //                 })
+            //                 .AddShardingCore();
+
+            //serviceCollection.AddShardingConfigure<WPFDBContext>();
 
             serviceCollection.AddLogging(logbuilder => logbuilder.AddSerilog());
 
             serviceCollection.AddQuartz(q =>
             {
-                q.ScheduleJob<TestJob>(trigger => trigger
-                        .StartNow()
-                        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
+                //q.ScheduleJob<TestJob>(trigger => trigger
+                //        .StartNow()
+                //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
 
 
-                q.ScheduleJob<TestJob2>(trigger => trigger
-                      .StartNow()
-                      .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
+                //q.ScheduleJob<TestJob2>(trigger => trigger
+                //      .StartNow()
+                //      .WithSimpleSchedule(x => x.WithIntervalInSeconds(1).RepeatForever()));
 
 
                 //var jobKeyMissingCar = new JobKey("TestJob");
@@ -120,8 +152,8 @@ namespace TestWPFEFCore
             //            .WithDependencyInjectionAdapter(serviceCollection));
             serviceCollection.AddStackExchangeRedisCache(
                 options => options.Configuration = ConfigurationManager.ConnectionStrings["redisConn"].ConnectionString);
-
-            container.BuildServiceProvider(serviceCollection);
+            IServiceProvider provider = container.BuildServiceProvider(serviceCollection);
+            //provider.UseAutoTryCompensateTable();
             return new UnityContainerExtension(container);
 
         }
@@ -143,7 +175,7 @@ namespace TestWPFEFCore
                    // PI盒推送的原始报文日志
                    .WriteTo.Logger(x => x.Filter.ByIncludingOnly(Matching.WithProperty("PIData"))
                    .WriteTo.File(piDataPath, rollingInterval: RollingInterval.Day, shared: true, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Message:lj}{NewLine}{Exception}"))
-                   .CreateLogger();
+            .CreateLogger();
             base.Initialize();
         }
     }

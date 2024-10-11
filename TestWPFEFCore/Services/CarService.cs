@@ -12,10 +12,9 @@ namespace TestWPFEFCore.Services
 {
     public class CarService : BaseService<CarInfo>, ICarService
     {
-        private readonly IRespository<CarInfo>? _respository;
-
-        public CarService(IRespository<CarInfo> _respository) : base(_respository)
+        public CarService(IRespository<CarInfo> respository) : base(respository)
         {
+
         }
     }
 }

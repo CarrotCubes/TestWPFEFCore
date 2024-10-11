@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--显示窗体底部的任务栏-->
-    <WindowChrome x:Key="WindowChromeKey">
+    <WindowChrome x:Key="WindowChromeKey" CornerRadius="15">
         <WindowChrome.ResizeBorderThickness>
             <Thickness>5</Thickness>
         </WindowChrome.ResizeBorderThickness>

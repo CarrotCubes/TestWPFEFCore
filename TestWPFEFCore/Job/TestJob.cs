@@ -18,9 +18,10 @@ namespace TestWPFEFCore.Job
         {
             _carService = carService;
         }
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            return Task.CompletedTask;
+            var sss = await _carService.GetFirstAsync();
+            //return Task.CompletedTask;
         }
     }
 }

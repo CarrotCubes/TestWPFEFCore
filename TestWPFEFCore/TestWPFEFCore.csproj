@@ -21,7 +21,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Prism.Unity" Version="8.1.97" />
 		<PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
@@ -29,10 +29,11 @@
 		<PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.8.1" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.6" />
 		<PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
+		<PackageReference Include="ShardingCore" Version="7.8.1.21" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="MyDependencyObject\" />
+		<Folder Include="MyDependencyObject\" />
 	</ItemGroup>
 
 </Project>
